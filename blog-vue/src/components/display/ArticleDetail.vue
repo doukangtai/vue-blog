@@ -30,7 +30,6 @@
       _this.articleId = _this.$route.query.articleId;
       if (_this.articleId) {
         this.getArticleById(_this.articleId);
-        setTimeout(_this.getHTML, 500);
       }
     },
     methods: {
@@ -38,6 +37,7 @@
         const _this = this;
         _this.getRequest('/getArticleById/' + id).then(value => {
           _this.article = value.data;
+          _this.getHTML()
         })
       },
       getHTML() {

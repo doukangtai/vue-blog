@@ -1,7 +1,7 @@
 <template>
   <el-container class="container" v-loading="loading">
     <el-header class="header">
-      <span class="title">简单博客</span>
+      <span @click="toDisplay" class="title">博客首页</span>
       <el-dropdown @command="handleCommand" class="dropdown">
   <span class="el-dropdown-link dropdown-link">
     {{this.$store.state.user.nickname}}<i class="el-icon-arrow-down el-icon--right"></i>
@@ -80,6 +80,9 @@
           })
         }
       },
+      toDisplay() {
+        this.$router.push({path: '/'})
+      }
     },
     data() {
       return {
@@ -120,6 +123,7 @@
     margin-left: 10px;
     line-height: 60px;
     font-size: large;
+    cursor: pointer;
   }
 
   .dropdown {

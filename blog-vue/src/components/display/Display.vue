@@ -7,6 +7,7 @@
         <el-menu-item :index="'/displayCategory'">分类</el-menu-item>
         <el-menu-item :index="'/displayTag'">标签</el-menu-item>
         <el-menu-item :index="'/about'">关于</el-menu-item>
+        <el-button @click="toLogin" style="margin-top: 13px;margin-right: -260px" size="medium" round plain type="primary">登录</el-button>
       </el-menu>
     </el-header>
     <el-main>
@@ -36,6 +37,9 @@
     methods: {
       handleSelect(key, keyPath) {
         // console.log(key, keyPath);
+      },
+      toLogin() {
+        this.$router.push({path: '/login'})
       }
     },
   }
