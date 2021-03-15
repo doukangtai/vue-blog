@@ -31,6 +31,7 @@
                 </template>
                 <el-menu-item :index="'/writeArticle'" :key="'writeArticle'">写文章</el-menu-item>
                 <el-menu-item :index="'/articleList'" :key="'articleList'">文章列表</el-menu-item>
+                <el-menu-item :index="'/tagCategoryAdmin'" :key="'tagCategoryAdmin'">标签分类管理</el-menu-item>
               </el-submenu>
               <el-submenu :index="'2'" :key="2">
                 <template slot="title">

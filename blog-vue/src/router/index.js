@@ -43,6 +43,14 @@ const routes = [
         meta: {
           requireAuth: true,
         }
+      },
+      {
+        path: '/tagCategoryAdmin',
+        name: '标签分类管理',
+        component: () => import('../components/admin/TagCategoryAdmin'),
+        meta: {
+          requireAuth: true,
+        }
       }
     ]
   },

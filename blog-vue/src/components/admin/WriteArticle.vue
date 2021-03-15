@@ -147,11 +147,13 @@
         }).then(value => {
           if (value.status == '200') {
             if (value.data.status == 'success') {
+              this.$message({
+                message: value.data.msg,
+                type: 'success'
+              });
               this.dialogVisible = false;
               this.categoryForm.category = '';
               _this.getAllCategory();
-            } else {
-              _this.$message.error({message: value.data.msg});
             }
           }
         });
@@ -163,11 +165,13 @@
         }).then(value => {
           if (value.status == '200') {
             if (value.data.status == 'success') {
+              this.$message({
+                message: value.data.msg,
+                type: 'success'
+              });
               this.dialogVisibleTag = false;
               this.tagForm.tag = '';
               _this.getAllTag();
-            } else {
-              _this.$message.error({message: value.data.msg});
             }
           }
         });
@@ -181,15 +185,12 @@
           content: _this.articleContent,
           id: _this.articleId,
         }).then(value => {
-          console.log(value);
-          if (value.status == 200 && value.data.status == 'success') {
+          if (value.data.status == 'success') {
             _this.$message.success({message: value.data.msg});
             _this.valueCategory = '';
             _this.valueTag = [];
             _this.title = '';
             _this.articleContent = '';
-          } else {
-            _this.$message.error({message: value.data.msg});
           }
         })
       },
