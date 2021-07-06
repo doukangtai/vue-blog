@@ -6,7 +6,6 @@
     </div>
     <template>
       <el-table
-          height="540"
           :data="articleData"
           style="width: 100%">
         <el-table-column
@@ -34,7 +33,7 @@
           </template>
         </el-table-column>
         <el-table-column
-            prop="time"
+            prop="date"
             label="发表日期"
             width="160">
         </el-table-column>
@@ -48,71 +47,109 @@
         </el-table-column>
       </el-table>
     </template>
+    <div class="block" style="margin-top: 10px">
+      <el-pagination
+          background
+          @current-change="handleCurrentChange"
+          layout="prev, pager, next"
+          :page-size="pageSize"
+          :total="total">
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
+  import axios from "axios";
+
   export default {
     name: "ArticleList",
     mounted() {
-      this.getAllArticle();
+      this.listSubstringContent();
     },
     methods: {
+      handleCurrentChange(val) {
+        this.page = val;
+        if (this.isDirectPageButton) {
+          this.listSubstringContent();
+        } else {
+          this.getArticleByTitle();
+        }
+      },
+      listSubstringContent() {
+        axios.get('/article/list/substring', {
+          params: {
+            page: this.page - 1,
+            size: this.pageSize,
+          }
+        }).then(value => {
+          const data = value.data
+          if (data.success) {
+            this.articleData = data.content.list;
+            this.total = data.content.total;
+          } else {
+            this.$message.error({message: data.message})
+          }
+        })
+      },
+      getArticleByTitle() {
+        if (this.searchTitle == '') {
+          this.isDirectPageButton = true;
+          this.listSubstringContent();
+        } else {
+          this.isDirectPageButton = false;
+          axios.get('/article/title', {
+            params: {
+              page: this.page - 1,
+              size: this.pageSize,
+              title: this.searchTitle,
+            }
+          }).then(value => {
+            const data = value.data;
+            if (data.success) {
+              this.articleData = data.content.list;
+              this.total = data.content.total;
+            } else {
+              this.$message.error({message: data.message})
+            }
+          });
+        }
+      },
       editArticle(row) {
         this.$router.push({path: '/writeArticle', query: {id: row.id}});
       },
       deleteArticle(row) {
-        const _this = this;
-        _this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          _this.deleteRequest('/deleteArticleById/' + row.id).then(value => {
-            if (value.status == 200 && value.data.status == 'success') {
-              _this.$message.success({message: value.data.msg});
-              _this.getAllArticle();
+          axios.delete('/article/delete/' + row.id).then(value => {
+            const data = value.data;
+            if (data.success) {
+              this.$message.success({message: '删除成功'});
+              this.listSubstringContent();
             } else {
-              _this.$message.error({message: value.data.msg})
+              this.$message.error({message: '删除失败'})
             }
           });
         }).catch(() => {
-          _this.$message({
+          this.$message({
             type: 'info',
             message: '已取消删除'
           });
         });
       },
-      getAllArticle() {
-        const _this = this;
-        _this.getRequest('/getAllArticle').then(value => {
-          if (value.status == 200) {
-            _this.articleData = value.data
-          } else {
-            _this.$message.error({message: "初始化数据失败"})
-          }
-        })
-      },
-      getArticleByTitle() {
-        const _this = this;
-        if (_this.searchTitle == '') {
-          _this.getAllArticle();
-        } else {
-          _this.getRequest('/getArticleByTitle/' + _this.searchTitle).then(value => {
-            if (value.status == 200) {
-              _this.articleData = value.data;
-            } else {
-              _this.$message.error({message: "初始化数据失败"})
-            }
-          });
-        }
-      }
     },
     data() {
       return {
         searchTitle: '',
         articleData: [],
         tagString: '',
+        page: 1,
+        pageSize: 7,
+        total: 100,
+        isDirectPageButton: false,
       }
     }
   }

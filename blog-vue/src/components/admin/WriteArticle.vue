@@ -75,15 +75,16 @@
 </template>
 
 <script>
+  import axios from "axios";
+
   export default {
     name: "WriteArticle",
     mounted() {
-      const _this = this;
       this.getAllCategory();
       this.getAllTag();
-      const id = _this.$route.query.id;
-      if (id != undefined) {
-        _this.getArticleById(id);
+      const id = this.$route.query.id;
+      if (id) {
+        this.getArticleById(id);
       }
     },
     methods: {
@@ -92,37 +93,45 @@
         // 第一步.将图片上传到服务器.
         var formdata = new FormData();
         formdata.append('image', $file);
-        const _this = this;
-        _this.uploadFileRequest('/uploadImg', formdata).then((url) => {
-          // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
-          /**
-           * $vm 指为mavonEditor实例，可以通过如下两种方式获取
-           * 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
-           * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
-           */
-          if (url.data.status == 'success') {
-            _this.$refs.md.$img2Url(pos, url.data.msg);
+        axios.post('/article/upload/image', formdata).then(value => {
+          const data = value.data
+          if (data.success) {
+            this.$refs.md.$img2Url(pos, data.content);
           } else {
-            _this.$message({type: url.data.status, message: url.data.msg});
+            this.$message({type: 'error', message: '上传图片失败'});
           }
         })
       },
       getAllCategory() {
-        const _this = this;
-        this.getRequest('/getAllCategory').then(value => {
-          if (value.status == '200') {
-            _this.optionsCategory = value.data;
+        axios.get('/category/list').then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.optionsCategory = data.content;
           }
         });
       },
       getAllTag() {
-        const _this = this;
-        this.getAllCategory();
-        this.getRequest('/getAllTag').then(value => {
-          if (value.status == '200') {
-            _this.optionsTag = value.data;
+        axios.get('/tag/list').then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.optionsTag = data.content;
           }
         });
+      },
+      getArticleById(id) {
+        axios.get('/article/' + id).then(value => {
+          const data = value.data;
+          if (data.success) {
+            const article = data.content;
+            this.articleId = article.id;
+            this.title = article.title;
+            this.articleContent = article.content;
+            this.valueCategory = article.category.id;
+            for (let i = 0; i < article.tags.length; i++) {
+              this.valueTag.push(article.tags[i].id);
+            }
+          }
+        })
       },
       handleClose(done) {
         this.$confirm('确认关闭？')
@@ -141,72 +150,62 @@
           });
       },
       addCategory() {
-        const _this = this;
-        _this.postRequest('/addCategory', {
+        axios.post('/category/add', {
           category: this.categoryForm.category,
         }).then(value => {
-          if (value.status == '200') {
-            if (value.data.status == 'success') {
-              this.$message({
-                message: value.data.msg,
-                type: 'success'
-              });
-              this.dialogVisible = false;
-              this.categoryForm.category = '';
-              _this.getAllCategory();
-            }
+          const data = value.data
+          if (data.success) {
+            this.$message({
+              message: '添加分类成功',
+              type: 'success'
+            });
+          } else {
+            this.$message.error({message: data.message})
           }
+          this.dialogVisible = false;
+          this.categoryForm.category = '';
+          this.getAllCategory()
         });
       },
       addTag() {
-        const _this = this;
-        _this.postRequest('/addTag', {
+        axios.post('/tag/add', {
           tag: this.tagForm.tag,
         }).then(value => {
-          if (value.status == '200') {
-            if (value.data.status == 'success') {
-              this.$message({
-                message: value.data.msg,
-                type: 'success'
-              });
-              this.dialogVisibleTag = false;
-              this.tagForm.tag = '';
-              _this.getAllTag();
-            }
+          const data = value.data
+          if (data.success) {
+            this.$message({
+              message: '添加标签成功',
+              type: 'success'
+            });
+          } else {
+            this.$message.error({message: data.message})
           }
+          this.dialogVisibleTag = false;
+          this.tagForm.tag = '';
+          this.getAllTag();
         });
       },
       addArticle() {
-        const _this = this;
-        _this.postRequest('/addArticle', {
-          categoryId: _this.valueCategory,
-          tagIdArr: _this.valueTag,
-          title: _this.title,
-          content: _this.articleContent,
-          id: _this.articleId,
+        axios.post('/article/insert', {
+          categoryId: this.valueCategory,
+          tagIdArr: this.valueTag,
+          title: this.title,
+          content: this.articleContent,
+          id: this.articleId,
         }).then(value => {
-          if (value.data.status == 'success') {
-            _this.$message.success({message: value.data.msg});
-            _this.valueCategory = '';
-            _this.valueTag = [];
-            _this.title = '';
-            _this.articleContent = '';
+          const data = value.data;
+          if (data.success) {
+            this.$message.success({message: data.message});
+            this.valueCategory = '';
+            this.valueTag = [];
+            this.title = '';
+            this.articleContent = '';
+            this.articleId = '-1';
+          } else {
+            this.$message.error({message: data.message})
           }
         })
       },
-      getArticleById(id) {
-        const _this = this;
-        _this.getRequest('/getArticleById/' + id).then(value => {
-          const date = value.data;
-          _this.articleId = date.id;
-          _this.title = date.title;
-          _this.articleContent = date.content;
-          _this.valueCategory = date.category.id;
-          for (let i = 0; i < date.tags.length; i++) {
-            _this.valueTag.push(date.tags[i].id);
-          }
-        })
-      }
     },
     data() {
       return {

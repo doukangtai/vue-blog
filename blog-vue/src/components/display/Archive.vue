@@ -4,7 +4,7 @@
       <el-timeline-item placement="bottom" v-if="categoryName"><h4>{{categoryName}}</h4></el-timeline-item>
       <el-timeline-item placement="bottom" v-else-if="tagName"><h4>{{tagName}}</h4></el-timeline-item>
       <el-timeline-item placement="bottom" v-else><h4>时间线</h4></el-timeline-item>
-      <el-timeline-item v-for="(item, index) in article" :timestamp="item.time" placement="top">
+      <el-timeline-item v-for="(item, index) in article" :timestamp="item.date" placement="top">
         <el-card>
           <h4 class="title" @click="getArticleDetail(item.id)">{{item.title}}</h4>
         </el-card>
@@ -14,32 +14,39 @@
 </template>
 
 <script>
+  import axios from "axios";
+
   export default {
     name: "Archive",
     mounted() {
-      const _this = this;
-      _this.categoryId = _this.$route.query.categoryId;
-      _this.categoryName = _this.$route.query.categoryName;
-      _this.tagId = _this.$route.query.tagId;
-      _this.tagName = _this.$route.query.tagName;
-      if (_this.categoryId) {
-        _this.getRequest('/getArticleByCategoryId/' + _this.categoryId).then(value => {
-          _this.article = value.data;
+      this.categoryId = this.$route.query.categoryId;
+      this.categoryName = this.$route.query.categoryName;
+      this.tagId = this.$route.query.tagId;
+      this.tagName = this.$route.query.tagName;
+      if (this.categoryId) {
+        axios.get('/article/category/' + this.categoryId).then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.article = data.content;
+          }
         })
-      } else if (_this.tagId) {
-        _this.getRequest('/getArticleByTagId/' + _this.tagId).then(value => {
-          _this.article = value.data;
+      } else if (this.tagId) {
+        axios.get('/article/tag/' + this.tagId).then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.article = data.content;
+          }
         })
       } else {
-        _this.getAllArticleSubstringContent();
+        this.getAllArticle();
       }
     },
     methods: {
-      getAllArticleSubstringContent() {
-        const _this = this;
-        _this.getRequest('/getAllArticleSubstringContent').then(value => {
-          if (value.status == 200) {
-            _this.article = value.data;
+      getAllArticle() {
+        axios.get('/article/list').then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.article = data.content
           }
         })
       },
@@ -50,10 +57,10 @@
     data() {
       return {
         article: [],
-        categoryId: '',
-        categoryName: '',
-        tagId: '',
-        tagName: '',
+        categoryId: {},
+        categoryName: {},
+        tagId: {},
+        tagName: {},
       }
     }
   }

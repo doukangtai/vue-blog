@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import './plugins/element.js'
 import {getRequest} from "./utils/api";
+import {getRequestPage} from "./utils/api";
 import {postRequest} from "./utils/api";
 import {putRequest} from "./utils/api";
 import {deleteRequest} from "./utils/api";
@@ -18,6 +19,7 @@ Vue.prototype.postRequest = postRequest;
 Vue.prototype.putRequest = putRequest;
 Vue.prototype.deleteRequest = deleteRequest;
 Vue.prototype.getRequest = getRequest;
+Vue.prototype.getRequestPage = getRequestPage;
 Vue.prototype.uploadFileRequest = uploadFileRequest;
 
 Vue.use(mavonEditor);

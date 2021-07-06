@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div v-if="articleLoading">
     <h1 class="title">{{article.title}}</h1>
     <div class="tct">
       <i class="el-icon-time marginrl"></i>发表于
-      <span>{{article.time}}</span>
+      <span>{{article.date}}</span>
       <span class="marginrl">|</span>
       <i class="el-icon-folder-opened marginrl"></i>
       <span class="category" @click="getArticleByCategory(article.category.id, article.category.category)">{{article.category.category}}</span>
@@ -20,28 +20,27 @@
 <script>
   import marked from 'marked'
   import hljs from 'highlight.js'
-  import 'highlight.js/styles/github-gist.css';
+  import 'highlight.js/styles/atom-one-light.css';
   import '../../assets/github-markdown.css'
+  import axios from "axios";
 
   export default {
     name: "ArticleDetail",
-    mounted() {
-      const _this = this;
-      _this.articleId = _this.$route.query.articleId;
-      if (_this.articleId) {
-        this.getArticleById(_this.articleId);
-      }
+    created() {
+      this.articleId = this.$route.query.articleId;
+      this.getArticleById(this.articleId);
     },
     methods: {
       getArticleById(id) {
-        const _this = this;
-        _this.getRequest('/getArticleById/' + id).then(value => {
-          _this.article = value.data;
-          _this.getHTML()
+        axios.get('/article/' + id).then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.article = data.content;
+            this.getHTML()
+          }
         })
       },
       getHTML() {
-        const _this = this;
         marked.setOptions({
           renderer: new marked.Renderer(),
           highlight: function (code) {
@@ -56,7 +55,8 @@
           smartypants: false,
           xhtml: false
         });
-        this.code = marked(_this.article.content);
+        this.code = marked(this.article.content);
+        this.articleLoading = true
       },
       getArticleByCategory(id, category) {
         this.$router.push({path: '/archive', query: {categoryId: id, categoryName: category}});
@@ -68,8 +68,9 @@
     data() {
       return {
         code: '',
-        article: '',
+        article: {},
         articleId: '',
+        articleLoading: false
       }
     }
   }

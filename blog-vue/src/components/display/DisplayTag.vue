@@ -8,20 +8,21 @@
 </template>
 
 <script>
+  import axios from "axios";
+
   export default {
     name: "DisplayTag",
     mounted() {
-      const _this = this;
-      _this.getAllTag();
+      this.getAllTag();
     },
     methods: {
       getAllTag() {
-        const _this = this;
-        this.getRequest('/getAllTag').then(value => {
-          if (value.status == '200') {
-            _this.tag = value.data;
+        axios.get('/tag/list').then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.tag = data.content;
           }
-        });
+        })
       },
       getArticleByTagId(id, tag) {
         this.$router.push({path: '/archive', query: {tagId: id, tagName: tag}});

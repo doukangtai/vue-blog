@@ -10,20 +10,21 @@
 </template>
 
 <script>
+  import axios from "axios";
+
   export default {
     name: "DisplayCategory",
     mounted() {
-      const _this = this;
-      _this.getAllCategory();
+      this.getAllCategory();
     },
     methods: {
       getAllCategory() {
-        const _this = this;
-        this.getRequest('/getAllCategory').then(value => {
-          if (value.status == '200') {
-            _this.category = value.data;
+        axios.get('/category/list').then(value => {
+          const data = value.data
+          if (data.success) {
+            this.category = data.content
           }
-        });
+        })
       },
       getArticleByCategory(id, category) {
         this.$router.push({path: '/archive', query: {categoryId: id, categoryName: category}});

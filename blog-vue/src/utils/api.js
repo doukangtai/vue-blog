@@ -1,14 +1,14 @@
-import Axios from "axios";
+import axios from "axios";
 import {Message} from "element-ui";
 
-Axios.interceptors.request.use(value => {
+axios.interceptors.request.use(value => {
   return value;
 }, error => {
   Message.error({message: '请求超时'});
   return Promise.resolve(error);
 });
 
-Axios.interceptors.response.use(value => {
+axios.interceptors.response.use(value => {
   if (value && value.status == 200 && value.data.status == 'error') {
     Message.error({message: value.data.msg});
   }
@@ -27,7 +27,7 @@ Axios.interceptors.response.use(value => {
 });
 
 export const postRequest = (url, params) => {
-  return Axios({
+  return axios({
     url: url,
     method: 'post',
     data: params,
@@ -45,7 +45,7 @@ export const postRequest = (url, params) => {
 };
 
 export const putRequest = (url, params) => {
-  return Axios({
+  return axios({
     url: url,
     method: 'put',
     data: params,
@@ -63,21 +63,29 @@ export const putRequest = (url, params) => {
 };
 
 export const deleteRequest = (url) => {
-  return Axios({
+  return axios({
     url: url,
     method: 'delete',
   })
 };
 
 export const getRequest = (url) => {
-  return Axios({
+  return axios({
     url: url,
     method: 'get',
   })
 };
 
+export const getRequestPage = (url, params) => {
+  return axios({
+    url: url,
+    method: 'get',
+    data: params
+  })
+};
+
 export const uploadFileRequest = (url, params) => {
-  return Axios({
+  return axios({
     url: url,
     method: 'post',
     data: params,
