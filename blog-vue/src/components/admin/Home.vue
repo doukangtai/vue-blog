@@ -56,6 +56,8 @@
 </template>
 
 <script>
+  import axios from "axios";
+
   export default {
     name: "Home",
     methods: {
@@ -66,16 +68,18 @@
         console.log(key, keyPath);
       },
       handleCommand(command) {
-        const _this = this;
+        console.log(command)
         if (command == 'logout') {
-          _this.loading = true;
-          this.getRequest('/logout').then(value => {
-            _this.loading = false;
-            if (value && value.status == 200 && value.data.status == 'success') {
-              _this.$store.commit('logout');
-              _this.$router.push({path: '/login'});
+          this.loading = true;
+          const token = store.state.user.token;
+          axios.get('/user/logout/' + token).then(value => {
+            this.loading = false;
+            const data = value.data
+            if (data.success) {
+              this.$store.commit('logout');
+              this.$router.push({path: '/login'});
             } else {
-              _this.$message.error({message: '登出失败'});
+              this.$message.error({message: '登出失败'});
             }
           })
         }

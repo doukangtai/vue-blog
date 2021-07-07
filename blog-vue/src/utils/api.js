@@ -1,7 +1,12 @@
 import axios from "axios";
 import {Message} from "element-ui";
+import store from '.././store'
 
 axios.interceptors.request.use(value => {
+  let userObj = store.state.user;
+  if (!userObj || JSON.stringify(userObj) === "{}" || userObj.length === 0) {
+
+  }
   return value;
 }, error => {
   Message.error({message: '请求超时'});
@@ -9,9 +14,6 @@ axios.interceptors.request.use(value => {
 });
 
 axios.interceptors.response.use(value => {
-  if (value && value.status == 200 && value.data.status == 'error') {
-    Message.error({message: value.data.msg});
-  }
   return value;
 }, error => {
   if (error.response.status == 500 || error.response.status == 504) {
@@ -20,6 +22,8 @@ axios.interceptors.response.use(value => {
     Message.error({message: '页面找不到'});
   } else if (error.response.status == 403) {
     Message.error({message: '没有权限访问'});
+  } else if (error.response.status == 401) {
+    Message.error({message: '未登录，请先登录'});
   } else {
     Message.error({message: '找到了未知错误'});
   }

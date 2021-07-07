@@ -15,60 +15,60 @@
 </template>
 
 <script>
-  export default {
-    name: "Login",
-    data() {
-      return {
-        loginForm: {
-          username: 'admin',
-          password: '123',
-        },
-        checked: true,
-        loading: false,
-        rules: {
-          username: [
-            {required: true, message: '请输入用户名', trigger: 'blur'},
-          ],
-          password: [
-            {required: true, message: '请输入密码', trigger: 'blur'}
-          ],
-        }
-      };
-    },
-    methods: {
-      submitForm() {
-        const _this = this;
-        this.loading = true;
-        this.postRequest('/lg', {
-          username: _this.loginForm.username,
-          password: _this.loginForm.password,
-        }).then(value => {
-          _this.loading = false;
-          if (value && value.status == 200) {
-            if (value.data.status == 'success') {
-              let data = value.data.msg;
-              _this.$store.commit('login', data);
-              _this.$router.push({path: '/writeArticle'});
-            } else {
-              _this.$router.push({path: '/login'});
-            }
-          }
-        })
+import axios from "axios";
+
+export default {
+  name: "Login",
+  data() {
+    return {
+      loginForm: {
+        username: 'dkt',
+        password: '123456',
       },
-    }
+      checked: false,
+      loading: false,
+      rules: {
+        username: [
+          {required: true, message: '请输入用户名', trigger: 'blur'},
+        ],
+        password: [
+          {required: true, message: '请输入密码', trigger: 'blur'}
+        ],
+      }
+    };
+  },
+  methods: {
+    submitForm() {
+      this.loading = true;
+      axios.post('/user/login', {
+        username: this.loginForm.username,
+        password: this.loginForm.password,
+      }).then(value => {
+        this.loading = false;
+        const data = value.data
+        if (data.success) {
+          let user = data.content;
+          this.$store.commit('login', user);
+          this.$router.push({path: '/writeArticle'});
+        } else {
+          this.$router.push({path: '/login'});
+        }
+      })
+    },
   }
+}
 </script>
 
 <style scoped>
-  .loginForm {
-    margin: 200px auto 100px;
-    width: 400px;
-    padding: 80px 100px 30px 0px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px #dedede;
-  }
+.loginForm {
+  margin: 200px auto 100px;
+  width: 400px;
+  padding: 80px 100px 30px 0px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px #dedede;
+}
 
-  .checkbox {
-    margin: 0px 0px 10px 100px;
-  }
+.checkbox {
+  margin: 0px 0px 10px 100px;
+}
 </style>

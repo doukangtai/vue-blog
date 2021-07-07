@@ -12,8 +12,17 @@
         <i class="el-icon-collection-tag marginrl"></i>
         <span class="tag" @click="getArticleByTagId(it.id, it.tag)">{{it.tag}}</span>
       </span>
+      <span class="marginrl">|</span>
+      <i class="el-icon-view marginrl"></i>
+      <span>{{ article.view }}</span>
+      <span class="marginrl">|</span>
+      <i class="el-icon-trophy marginrl"></i>
+      <span>{{ article.praise }}</span>
     </div>
     <div v-html="code" class="article markdown-body"></div>
+    <el-row style="text-align: center">
+      <el-button @click="praiseArticle(article.id)" type="primary" round>点赞</el-button>
+    </el-row>
   </div>
 </template>
 
@@ -31,6 +40,16 @@
       this.getArticleById(this.articleId);
     },
     methods: {
+      praiseArticle(id) {
+        axios.get('/article/praise/' + id).then(value => {
+          const data = value.data;
+          if (data.success) {
+            this.$message.success({message: data.message});
+          } else {
+            this.$message.error({message: data.message})
+          }
+        })
+      },
       getArticleById(id) {
         axios.get('/article/' + id).then(value => {
           const data = value.data;

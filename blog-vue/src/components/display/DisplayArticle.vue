@@ -15,6 +15,12 @@
           <i class="el-icon-collection-tag marginrl"></i>
           <span class="tag" @click="getArticleByTagId(it.id, it.tag)">{{ it.tag }}</span>
           </span>
+          <span class="marginrl">|</span>
+          <i class="el-icon-view marginrl"></i>
+          <span>{{ item.view }}</span>
+          <span class="marginrl">|</span>
+          <i class="el-icon-trophy marginrl"></i>
+          <span>{{ item.praise }}</span>
         </div>
         <div class="content">
           {{ item.content }}

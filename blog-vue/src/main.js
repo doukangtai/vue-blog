@@ -26,7 +26,8 @@ Vue.use(mavonEditor);
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
-    if (store.state.user == undefined || store.state.user == '' || store.state.user.username == '' || store.state.user.username == undefined || store.state.user.nickname == '' || store.state.user.nickname == undefined) {
+    const user = store.state.user
+    if (user == undefined || user == '') {
       next({path: '/login'});
     } else {
       next();
