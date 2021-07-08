@@ -4,7 +4,7 @@
       <span @click="toDisplay" class="title">博客首页</span>
       <el-dropdown @command="handleCommand" class="dropdown">
   <span class="el-dropdown-link dropdown-link">
-    {{this.$store.state.user.nickname}}<i class="el-icon-arrow-down el-icon--right"></i>
+    {{JSON.parse(this.$store.state.user).nickname}}<i class="el-icon-arrow-down el-icon--right"></i>
   </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="logout">退出</el-dropdown-item>
@@ -68,16 +68,15 @@
         console.log(key, keyPath);
       },
       handleCommand(command) {
-        console.log(command)
         if (command == 'logout') {
           this.loading = true;
-          const token = store.state.user.token;
+          const token = JSON.parse(this.$store.state.user).token;
           axios.get('/user/logout/' + token).then(value => {
             this.loading = false;
             const data = value.data
             if (data.success) {
               this.$store.commit('logout');
-              this.$router.push({path: '/login'});
+              this.$router.push({path: '/'});
             } else {
               this.$message.error({message: '登出失败'});
             }

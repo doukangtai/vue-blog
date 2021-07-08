@@ -7,7 +7,8 @@
         <el-menu-item :index="'/displayCategory'">分类</el-menu-item>
         <el-menu-item :index="'/displayTag'">标签</el-menu-item>
         <el-menu-item :index="'/about'">关于</el-menu-item>
-        <el-button @click="toLogin" style="margin-top: 13px;margin-right: -260px" size="medium" round plain type="primary">登录</el-button>
+        <el-button v-if="this.$store.state.user == '{}' || this.$store.state.user == '' || this.$store.state.user == undefined" @click="toLogin" style="margin-top: 13px;margin-right: -260px" size="medium" round plain type="primary">登录</el-button>
+        <span @click="toHome" style="line-height: 60px;margin-right: -280px;color: red;cursor: pointer" v-else>{{ JSON.parse(this.$store.state.user).nickname }}</span>
       </el-menu>
     </el-header>
     <el-main>
@@ -40,6 +41,9 @@
       },
       toLogin() {
         this.$router.push({path: '/login'})
+      },
+      toHome() {
+        this.$router.push({path: '/writeArticle'})
       }
     },
   }
