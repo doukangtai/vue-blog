@@ -13,5 +13,19 @@ module.exports = {
         }
       }
     }
+  },
+  configureWebpack: {
+    externals: {
+      'vue': 'Vue',
+      'vue-router': 'VueRouter',
+      'vuex': 'Vuex',
+      'axios': 'axios',
+      'highlight.js': 'highlight.js',
+      'element-ui': 'ELEMENT',
+      'core-js': 'core-js',
+      'marked': 'marked',
+      'mavon-editor': 'MavonEditor',
+      'normalize.css': 'normalize.css',
+    }
   }
 }

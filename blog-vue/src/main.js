@@ -9,9 +9,10 @@ import 'normalize.css/normalize.css'
 import axios from "axios";
 import {Message} from "element-ui";
 
+// axios.defaults.baseURL = 'http://47.105.170.162/proxy'
+// axios.defaults.baseURL = 'http://localhost:8081/proxy'
 
 axios.interceptors.request.use(value => {
-  console.log('axios.interceptors.request111')
   let userStr = store.state.user;
   if (userStr != '' && userStr != undefined && userStr != '{}') {
     let userObj = JSON.parse(userStr)
@@ -22,18 +23,13 @@ axios.interceptors.request.use(value => {
   }
   return value;
 }, error => {
-  console.log('axios.interceptors.request222')
   Message.error({message: '请求超时'});
   return Promise.resolve(error);
 });
 
 axios.interceptors.response.use(value => {
-  console.log('axios.interceptors.response111')
   return value;
 }, error => {
-  console.log('axios.interceptors.response222')
-  console.log('error', error)
-  console.log('error.response', error.response)
   window.localStorage.removeItem('user')
   if (error.response.status == 500 || error.response.status == 504) {
     Message.error({message: '服务器挂掉了'});
