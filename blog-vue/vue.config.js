@@ -20,7 +20,7 @@ module.exports = {
       'vue-router': 'VueRouter',
       'vuex': 'Vuex',
       'axios': 'axios',
-      'highlight.js': 'highlight.js',
+      'highlight.js': 'hljs',
       'element-ui': 'ELEMENT',
       'core-js': 'core-js',
       'marked': 'marked',
